@@ -48,7 +48,7 @@ WHERE country = 'England'
 
 **קוד השאילתא (Method B - שימוש ב-Virtual Table / Derived Table):**
 
-## ```sql
+```sql
 
 SELECT ft.team_name, ft.budget_remaining, u.username
 FROM FANTASY_TEAM ft
