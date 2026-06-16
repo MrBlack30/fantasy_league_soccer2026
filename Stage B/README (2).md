@@ -8,7 +8,7 @@
 ## אוריה שחור 309857569
 
 ## ## חלק א': שאילתות SELECT כפולות
-## כול התמונות בקובץ נפרד לצורך נוחות הקורא#
+## כול התמונות בסוף ובקובץ נפרד לצורך נוחות הקורא#
 
 ### שאילתה 1: מסך סקאוטינג (Scouting Screen)
 **תיאור השאילתא:** שליפת השם הפרטי, שם המשפחה, המחיר ושנת הלידה של שחקנים שנולדו בשנת
@@ -420,10 +420,12 @@ WHERE EXTRACT(YEAR FROM fl.end_date) < 2023
 
 
 
+<img width="1146" height="456" alt="image (6)" src="https://github.com/user-attachments/assets/41eb4d02-ce3c-488b-9e3a-9905bc1158ef" />
+<img width="1414" height="830" alt="image (5)" src="https://github.com/user-attachments/assets/f61da0b4-7597-4f10-acb7-c15f17feac55" />
+<img width="1780" height="980" alt="image (4)" src="https://github.com/user-attachments/assets/41c05495-1475-486a-9546-571fb6c25934" />
+<img width="1782" height="982" alt="image (3)" src="https://github.com/user-attachments/assets/55f8c165-dfd0-4d43-ae90-10144302b410" />
+<img width="1822" height="1002" alt="image (2)" src="https://github.com/user-attachments/assets/4dc29ce4-6af9-435b-a884-d18146e1aaae" />
 
-
-
-## \
 
 
 
