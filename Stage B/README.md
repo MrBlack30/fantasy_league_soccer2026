@@ -1,7 +1,7 @@
 
 
 
-## # דוח פרויקט בסיסי נתונים - שלב ב'
+# דוח פרויקט בסיסי נתונים - שלב ב'
 
 ## אריאל נמיר 123456789
 ## זורנו אריאל 285495067
@@ -15,7 +15,7 @@
 ## 2002 ומשחקים בקבוצות הממוקמות באנגליה.
 
 **קוד השאילתא (Method A - שימוש בתנאי IN):**
-## ```sql
+```sql
 SELECT p.first_name, p.last_name, p.price, EXTRACT(YEAR FROM p.birth_date) AS
 birth_year
 FROM PLAYER p
@@ -24,7 +24,8 @@ AND p.real_team_id IN (
 SELECT real_team_id
 ## FROM REAL_TEAM
 WHERE country = 'England'
-## );
+ );
+```
 
 
 
