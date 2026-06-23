@@ -102,7 +102,8 @@ $$;
 
 The function is called from Main Program 1, which fetches every row from the returned cursor and prints it. Below is proof that it ran successfully for player 423 (Harry Ederson), who had stats in all 38 gameweeks of the 2023/24 season.
 
------------- Enter a screenshot of the NOTICE output from Main Program 1 Step 1, showing the cursor opening and GW rows being printed (e.g. "Opening season stats cursor for: Harry Ederson..." followed by GW rows) ------------
+<img width="2716" height="1442" alt="image" src="https://github.com/user-attachments/assets/88f8c803-51dc-4b8c-8baf-edaa0c704dd4" />
+
 
 ------------ Enter a screenshot of the final summary line: "Total gameweeks: 38 | Season points total: ..." ------------
 
