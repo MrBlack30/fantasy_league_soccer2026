@@ -108,6 +108,16 @@ NOTICE:  Opening season stats cursor for: Harry Ederson (ID: 423, Price: £10.5m
 
 
 ----------------------------------------------------------------
+[2b] FUNCTION 1 – fn_get_player_season_stats
+     Final summary line (end of Main Program 1 Step 1)
+----------------------------------------------------------------
+
+NOTICE:  ------------------------------------------------------------
+NOTICE:  Total gameweeks: 38   |   Season points total: 145
+DO
+
+
+----------------------------------------------------------------
 [3] FUNCTION 2 – fn_evaluate_fantasy_team
     Standalone call: SELECT * FROM fn_evaluate_fantasy_team(1, 1);
 ----------------------------------------------------------------
