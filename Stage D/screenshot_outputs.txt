@@ -1,0 +1,367 @@
+================================================================
+STAGE D – ALL PROGRAM OUTPUTS FOR SCREENSHOTS
+================================================================
+Run against: mydatabase (PostgreSQL 18, Docker container my_postgres)
+Player used for tests: Harry Ederson (player_id = 423)
+Team used for tests:   Roberto FC 1 (team_id = 1)
+Gameweek used:         Season 2023, GW 1 (gameweek_id = 1)
+================================================================
+
+
+----------------------------------------------------------------
+[1] AlterTable.sql – proof the two columns were added
+----------------------------------------------------------------
+
+Command run:
+  psql -f AlterTable.sql
+
+Output:
+  ALTER TABLE
+  ALTER TABLE
+
+Verification – \d player (shows new previous_price column):
+
+                            Table "public.player"
+       Column        |         Type          | Collation | Nullable | Default
+---------------------+-----------------------+-----------+----------+---------
+ player_id           | integer               |           | not null |
+ first_name          | character varying(50) |           | not null |
+ last_name           | character varying(50) |           | not null |
+ nationality         | character varying(50) |           |          |
+ price               | numeric(5,1)          |           | not null |
+ total_points        | integer               |           |          | 0
+ selected_by_percent | numeric(5,2)          |           |          |
+ birth_date          | date                  |           |          |
+ contract_start_date | date                  |           |          |
+ real_team_id        | integer               |           | not null |
+ position_id         | integer               |           | not null |
+ person_id           | character varying(50) |           |          |
+ previous_price      | numeric(5,1)          |           |          |    <-- NEW
+Indexes:
+    "player_pkey" PRIMARY KEY, btree (player_id)
+Triggers:
+    trg_player_price_change BEFORE UPDATE OF price ON player FOR EACH ROW EXECUTE FUNCTION trg_fn_log_price_change()
+
+Verification – \d fantasy_team (shows new total_transfers_cost column):
+
+                          Table "public.fantasy_team"
+        Column        |          Type          | Collation | Nullable | Default
+----------------------+------------------------+-----------+----------+---------
+ team_id              | integer                |           | not null |
+ team_name            | character varying(100) |           | not null |
+ formation            | character varying(10)  |           |          |
+ total_points         | integer                |           |          | 0
+ budget_remaining     | numeric(6,1)           |           |          |
+ user_id              | integer                |           | not null |
+ league_id            | integer                |           | not null |
+ total_transfers_cost | numeric(8,1)           |           |          | 0    <-- NEW
+
+
+----------------------------------------------------------------
+[2] FUNCTION 1 – fn_get_player_season_stats
+    Standalone call: BEGIN; SELECT fn_get_player_season_stats(423); FETCH ALL IN player_stats_cursor; COMMIT;
+----------------------------------------------------------------
+
+NOTICE:  Opening season stats cursor for: Harry Ederson (ID: 423, Price: £10.5m, Total pts: 200)
+
+ season_year | gameweek_number | match_date |            home_team            |            away_team            | home_score | away_score | minutes_played | goals_scored | assists | clean_sheet | yellow_cards | red_cards | saves | bonus_points | gw_points
+-------------+-----------------+------------+---------------------------------+---------------------------------+------------+------------+----------------+--------------+---------+-------------+--------------+-----------+-------+--------------+-----------
+        2023 |               1 | 2023-08-11 | Chelsea                         | Nottingham Forest               |          1 |          1 |             77 |            1 |       0 |           0 |            0 |         0 |     0 |            0 |         6
+        2023 |               2 | 2023-08-21 | Nottingham Forest               | Brighton                        |          3 |          0 |             11 |            0 |       0 |           1 |            2 |         0 |     0 |            3 |         2
+        2023 |               3 | 2023-08-28 | Aston Villa                     | Nottingham Forest               |          3 |          2 |             10 |            0 |       0 |           0 |            0 |         0 |     0 |            3 |         4
+        2023 |               4 | 2023-09-01 | Nottingham Forest               | Wolverhampton Wanderers         |          2 |          0 |             20 |            2 |       0 |           1 |            0 |         0 |     0 |            0 |         9
+        2023 |               5 | 2023-09-09 | Tottenham Hotspur               | Nottingham Forest               |          3 |          2 |             77 |            0 |       0 |           0 |            2 |         0 |     0 |            2 |         2
+        2023 |               6 | 2023-09-15 | Nottingham Forest               | Arsenal                         |          1 |          2 |             81 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         2
+        2023 |               7 | 2023-09-22 | Nottingham Forest               | Manchester United               |          3 |          2 |             69 |            0 |       0 |           0 |            0 |         0 |     0 |            2 |         4
+        2023 |               8 | 2023-09-29 | Luton Town                      | Nottingham Forest               |          0 |          3 |              9 |            0 |       0 |           1 |            0 |         0 |     0 |            0 |         1
+        2023 |               9 | 2023-10-09 | Nottingham Forest               | Fulham                          |          2 |          3 |             23 |            0 |       0 |           0 |            0 |         0 |     0 |            3 |         4
+        2023 |              10 | 2023-10-15 | Crystal Palace                  | Nottingham Forest               |          3 |          2 |             66 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         2
+        2023 |              11 | 2023-10-22 | Nottingham Forest               | Burnley                         |          3 |          1 |             25 |            0 |       0 |           0 |            1 |         0 |     0 |            3 |         3
+        2023 |              12 | 2023-10-27 | Brentford                       | Nottingham Forest               |          2 |          1 |             62 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         2
+        2023 |              13 | 2023-11-03 | Nottingham Forest               | Leicester City                  |          3 |          1 |             82 |            0 |       1 |           0 |            0 |         0 |     0 |            2 |         7
+        2023 |              14 | 2023-11-12 | West Ham United                 | Nottingham Forest               |          2 |          3 |             90 |            0 |       1 |           0 |            0 |         0 |     0 |            0 |         5
+        2023 |              15 | 2023-11-20 | Nottingham Forest               | Sheffield United                |          3 |          1 |             76 |            2 |       1 |           0 |            0 |         0 |     0 |            0 |        13
+        2023 |              16 | 2023-11-26 | Nottingham Forest               | Newcastle United                |          1 |          1 |             69 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         2
+        2023 |              17 | 2023-12-03 | Manchester City                 | Nottingham Forest               |          2 |          0 |             23 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         1
+        2023 |              18 | 2023-12-08 | Nottingham Forest               | Liverpool                       |          2 |          1 |             77 |            0 |       0 |           0 |            0 |         0 |     0 |            2 |         4
+        2023 |              19 | 2023-12-18 | Everton                         | Nottingham Forest               |          4 |          2 |             64 |            2 |       0 |           0 |            0 |         0 |     0 |            0 |        10
+        2023 |              20 | 2023-12-25 | Nottingham Forest               | Chelsea                         |          3 |          0 |             82 |            0 |       0 |           1 |            1 |         0 |     0 |            1 |         2
+        2023 |              21 | 2023-12-29 | Brighton                        | Nottingham Forest               |          0 |          2 |             83 |            0 |       1 |           1 |            0 |         0 |     0 |            0 |         5
+        2023 |              22 | 2024-01-08 | Nottingham Forest               | Aston Villa                     |          0 |          1 |             89 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         2
+        2023 |              23 | 2024-01-12 | Wolverhampton Wanderers         | Nottingham Forest               |          0 |          2 |             69 |            0 |       1 |           1 |            0 |         0 |     0 |            0 |         5
+        2023 |              24 | 2024-01-19 | Nottingham Forest               | Tottenham Hotspur               |          3 |          3 |             81 |            0 |       2 |           0 |            0 |         0 |     0 |            1 |         9
+        2023 |              25 | 2024-01-27 | Arsenal                         | Nottingham Forest               |          1 |          1 |             13 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         1
+        2023 |              26 | 2024-02-03 | Manchester United               | Nottingham Forest               |          0 |          2 |             70 |            0 |       0 |           1 |            0 |         0 |     0 |            2 |         4
+        2023 |              27 | 2024-02-11 | Nottingham Forest               | Luton Town                      |          1 |          3 |             82 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         2
+        2023 |              28 | 2024-02-17 | Fulham                          | Nottingham Forest               |          3 |          0 |             60 |            0 |       0 |           0 |            0 |         0 |     0 |            1 |         3
+        2023 |              29 | 2024-02-23 | Nottingham Forest               | Crystal Palace                  |          1 |          0 |             70 |            0 |       0 |           1 |            0 |         0 |     0 |            1 |         3
+        2023 |              30 | 2024-03-03 | Burnley                         | Nottingham Forest               |          2 |          1 |             66 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         2
+        2023 |              31 | 2024-03-09 | Nottingham Forest               | Brentford                       |          4 |          0 |             73 |            0 |       0 |           1 |            1 |         0 |     0 |            0 |         1
+        2023 |              32 | 2024-03-15 | Leicester City                  | Nottingham Forest               |          1 |          3 |             85 |            0 |       2 |           0 |            0 |         0 |     0 |            0 |         8
+        2023 |              33 | 2024-03-25 | Nottingham Forest               | West Ham United                 |            |            |              0 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         0
+        2023 |              34 | 2024-04-01 | Sheffield United                | Nottingham Forest               |            |            |              0 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         0
+        2023 |              35 | 2024-04-06 | Newcastle United                | Nottingham Forest               |            |            |              0 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         0
+        2023 |              36 | 2024-04-15 | Nottingham Forest               | Manchester City                 |            |            |              0 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         0
+        2023 |              37 | 2024-04-20 | Liverpool                       | Nottingham Forest               |            |            |              0 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         0
+        2023 |              38 | 2024-04-27 | Nottingham Forest               | Everton                         |            |            |              0 |            0 |       0 |           0 |            0 |         0 |     0 |            0 |         0
+(38 rows)
+
+
+----------------------------------------------------------------
+[3] FUNCTION 2 – fn_evaluate_fantasy_team
+    Standalone call: SELECT * FROM fn_evaluate_fantasy_team(1, 1);
+----------------------------------------------------------------
+
+ team_name_out | formation_out | total_squad_value | budget_remaining | starting_xi_points | avg_points_per_player |     captain_name     | health_rating
+---------------+---------------+-------------------+------------------+--------------------+-----------------------+----------------------+---------------
+ Roberto FC 1  | 4-1-4-1       |             124.4 |             53.1 |                 60 |                  5.45 | Nicolas Martin (FWD) | Good
+(1 row)
+
+
+----------------------------------------------------------------
+[4] PROCEDURE 1 – pr_update_player_prices
+    (output from main1.sql STEP 2)
+----------------------------------------------------------------
+
+NOTICE:  Starting price update for 600 players...
+NOTICE:  Price RISE — Harry Ederson (ID 423): £10.0m → £10.1m (change: 0.1)
+NOTICE:  Player Harry Ederson-▲ (ID 423): £10.0m → £10.1m
+NOTICE:  Price RISE — Pape Nunez (ID 6): £7.0m → £7.1m (change: 0.1)
+NOTICE:  Player Pape Nunez-▲ (ID 6): £7.0m → £7.1m
+NOTICE:  Price RISE — Eberechi Pickford (ID 8): £10.0m → £10.1m (change: 0.1)
+NOTICE:  Player Eberechi Pickford-▲ (ID 8): £10.0m → £10.1m
+  ... [216 price changes logged] ...
+NOTICE:  Price RISE — Trent Evans (ID 600): £6.0m → £6.1m (change: 0.1)
+NOTICE:  Player Trent Evans-▲ (ID 600): £6.0m → £6.1m
+NOTICE:  --- Price update complete ---
+NOTICE:  Players checked: 600  |  Updated: 216  |  Raised: 212  |  Dropped: 4
+
+Verification – previous_price column populated after procedure:
+
+SELECT player_id, first_name, last_name, previous_price, price FROM player WHERE previous_price IS NOT NULL LIMIT 5;
+
+ player_id | first_name | last_name | previous_price | price
+-----------+------------+-----------+----------------+-------
+       423 | Harry      | Ederson   |            9.2 |  10.0
+         6 | Pape       | Nunez     |            7.0 |   7.1
+         8 | Eberechi   | Pickford  |           10.0 |  10.1
+        10 | Nathan     | Robertson |            9.7 |   9.8
+        13 | Charlie    | Jackson   |           10.3 |  10.4
+(5 rows)
+
+
+----------------------------------------------------------------
+[5] PROCEDURE 2 – pr_process_gameweek_points
+    (output from main2.sql STEP 2)
+----------------------------------------------------------------
+
+NOTICE:  Processing points for gameweek 1...
+NOTICE:  Gameweek 1 processing complete.
+
+Verification – LEAGUE_STANDING rows inserted (first 10):
+
+SELECT * FROM league_standing WHERE gameweek_id = 1 ORDER BY rank LIMIT 10;
+
+ standing_id | points | rank | league_id | team_id | gameweek_id
+-------------+--------+------+-----------+---------+-------------
+         279 |   1844 |    1 |        11 |     172 |           1
+         491 |   1515 |    1 |        15 |     470 |           1
+         275 |   1088 |    1 |         2 |     168 |           1
+         170 |    784 |    1 |         6 |     463 |           1
+         346 |   1091 |    1 |         5 |     233 |           1
+         404 |   1947 |    1 |        14 |     298 |           1
+         477 |    457 |    1 |         3 |     440 |           1
+         390 |   1718 |    1 |         8 |     280 |           1
+         410 |   1003 |    1 |         9 |     310 |           1
+         420 |    175 |    1 |        16 |     325 |           1
+(10 rows)
+
+Verification – FANTASY_TEAM total_points updated (top 5):
+
+SELECT team_id, team_name, total_points FROM fantasy_team ORDER BY total_points DESC LIMIT 5;
+
+ team_id |   team_name   | total_points
+---------+---------------+--------------
+     185 | Carlos FC 185 |         2069
+      32 | William FC 32 |         2052
+     173 | Oliver FC 173 |         2038
+      76 | Mason FC 76   |         2037
+       3 | Mohammed FC 3 |         2031
+(5 rows)
+
+
+----------------------------------------------------------------
+[6] TRIGGER 1 – trg_player_price_change
+    Test A: valid price RISE
+    Command: UPDATE PLAYER SET price = 10.5 WHERE player_id = 423;
+----------------------------------------------------------------
+
+NOTICE:  Price RISE — Harry Ederson (ID 423): £10.0m → £10.5m (change: 0.5)
+UPDATE 1
+
+Verification – previous_price saved:
+
+SELECT player_id, first_name, last_name, previous_price, price FROM PLAYER WHERE player_id = 423;
+
+ player_id | first_name | last_name | previous_price | price
+-----------+------------+-----------+----------------+-------
+       423 | Harry      | Ederson   |           10.0 |  10.5
+(1 row)
+
+
+----------------------------------------------------------------
+[6b] TRIGGER 1 – trg_player_price_change
+     Test B: invalid price (above 20) – INSERT ABORTED
+     Command: UPDATE PLAYER SET price = 25.0 WHERE player_id = 423;
+----------------------------------------------------------------
+
+ERROR:  Invalid price 25.0 for player Harry Ederson (ID 423): must be between 0.1 and 20.0.
+CONTEXT:  PL/pgSQL function trg_fn_log_price_change() line 8 at RAISE
+
+
+----------------------------------------------------------------
+[7] TRIGGER 2 – trg_transfer_budget_check
+    Test A: valid transfer – budget sufficient, INSERT approved
+    Budget before: £60.6m
+    Command:
+      INSERT INTO TRANSFER(transfer_id, price_paid, transfer_date, team_id, player_out_id, player_in_id, gameweek_id)
+      VALUES (1002, 7.5, CURRENT_DATE, 1, 195, 2, 1);
+----------------------------------------------------------------
+
+NOTICE:  Transfer approved [team "Roberto FC 1"]: OUT Harvey Garcia → IN Liam Odegaard for £7.5m  (budget left: £53.1m)
+INSERT 0 1
+
+Verification – budget deducted and cost accumulated:
+
+SELECT team_id, team_name, budget_remaining, total_transfers_cost FROM FANTASY_TEAM WHERE team_id = 1;
+
+ team_id |  team_name   | budget_remaining | total_transfers_cost
+---------+--------------+------------------+----------------------
+       1 | Roberto FC 1 |             53.1 |                 18.1
+(1 row)
+
+
+----------------------------------------------------------------
+[7b] TRIGGER 2 – trg_transfer_budget_check
+     Test B: rejected transfer – budget insufficient, INSERT ABORTED
+     Budget available: £53.1m, trying to spend: £999.0m
+     Command:
+       INSERT INTO TRANSFER(transfer_id, price_paid, transfer_date, team_id, player_out_id, player_in_id, gameweek_id)
+       VALUES (1003, 999.0, CURRENT_DATE, 1, 96, 3, 1);
+----------------------------------------------------------------
+
+ERROR:  Transfer rejected: team "Roberto FC 1" has insufficient budget. Available: £53.1m  |  Required: £999.0m  |  Shortfall: £945.9m
+CONTEXT:  PL/pgSQL function trg_fn_validate_transfer() line 40 at RAISE
+
+
+----------------------------------------------------------------
+[8] MAIN PROGRAM 1 – main1.sql
+    (calls fn_get_player_season_stats + pr_update_player_prices)
+----------------------------------------------------------------
+
+NOTICE:  ============================================================
+NOTICE:    Main Program 1
+NOTICE:  ============================================================
+NOTICE:
+NOTICE:  STEP 1 — Season stats for player ID 423
+NOTICE:  ------------------------------------------------------------
+NOTICE:  Opening season stats cursor for: Harry Ederson (ID: 423, Price: £10.5m, Total pts: 200)
+NOTICE:  GW 2023-2024 (1)  |  Chelsea vs Nottingham Forest  |  Min: 77  G: 1  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 6
+NOTICE:  GW 2023-2024 (2)  |  Nottingham Forest vs Brighton  |  Min: 11  G: 0  A: 0  CS: 1  Yel: 2  Red: 0  Saves: 0  Bonus: 3  Pts: 2
+NOTICE:  GW 2023-2024 (3)  |  Aston Villa vs Nottingham Forest  |  Min: 10  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 3  Pts: 4
+NOTICE:  GW 2023-2024 (4)  |  Nottingham Forest vs Wolverhampton Wanderers  |  Min: 20  G: 2  A: 0  CS: 1  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 9
+NOTICE:  GW 2023-2024 (5)  |  Tottenham Hotspur vs Nottingham Forest  |  Min: 77  G: 0  A: 0  CS: 0  Yel: 2  Red: 0  Saves: 0  Bonus: 2  Pts: 2
+NOTICE:  GW 2023-2024 (6)  |  Nottingham Forest vs Arsenal  |  Min: 81  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 2
+NOTICE:  GW 2023-2024 (7)  |  Nottingham Forest vs Manchester United  |  Min: 69  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 2  Pts: 4
+NOTICE:  GW 2023-2024 (8)  |  Luton Town vs Nottingham Forest  |  Min: 9  G: 0  A: 0  CS: 1  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 1
+NOTICE:  GW 2023-2024 (9)  |  Nottingham Forest vs Fulham  |  Min: 23  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 3  Pts: 4
+NOTICE:  GW 2023-2024 (10)  |  Crystal Palace vs Nottingham Forest  |  Min: 66  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 2
+NOTICE:  GW 2023-2024 (11)  |  Nottingham Forest vs Burnley  |  Min: 25  G: 0  A: 0  CS: 0  Yel: 1  Red: 0  Saves: 0  Bonus: 3  Pts: 3
+NOTICE:  GW 2023-2024 (12)  |  Brentford vs Nottingham Forest  |  Min: 62  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 2
+NOTICE:  GW 2023-2024 (13)  |  Nottingham Forest vs Leicester City  |  Min: 82  G: 0  A: 1  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 2  Pts: 7
+NOTICE:  GW 2023-2024 (14)  |  West Ham United vs Nottingham Forest  |  Min: 90  G: 0  A: 1  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 5
+NOTICE:  GW 2023-2024 (15)  |  Nottingham Forest vs Sheffield United  |  Min: 76  G: 2  A: 1  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 13
+NOTICE:  GW 2023-2024 (16)  |  Nottingham Forest vs Newcastle United  |  Min: 69  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 2
+NOTICE:  GW 2023-2024 (17)  |  Manchester City vs Nottingham Forest  |  Min: 23  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 1
+NOTICE:  GW 2023-2024 (18)  |  Nottingham Forest vs Liverpool  |  Min: 77  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 2  Pts: 4
+NOTICE:  GW 2023-2024 (19)  |  Everton vs Nottingham Forest  |  Min: 64  G: 2  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 10
+NOTICE:  GW 2023-2024 (20)  |  Nottingham Forest vs Chelsea  |  Min: 82  G: 0  A: 0  CS: 1  Yel: 1  Red: 0  Saves: 0  Bonus: 1  Pts: 2
+NOTICE:  GW 2023-2024 (21)  |  Brighton vs Nottingham Forest  |  Min: 83  G: 0  A: 1  CS: 1  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 5
+NOTICE:  GW 2023-2024 (22)  |  Nottingham Forest vs Aston Villa  |  Min: 89  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 2
+NOTICE:  GW 2023-2024 (23)  |  Wolverhampton Wanderers vs Nottingham Forest  |  Min: 69  G: 0  A: 1  CS: 1  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 5
+NOTICE:  GW 2023-2024 (24)  |  Nottingham Forest vs Tottenham Hotspur  |  Min: 81  G: 0  A: 2  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 1  Pts: 9
+NOTICE:  GW 2023-2024 (25)  |  Arsenal vs Nottingham Forest  |  Min: 13  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 1
+NOTICE:  GW 2023-2024 (26)  |  Manchester United vs Nottingham Forest  |  Min: 70  G: 0  A: 0  CS: 1  Yel: 0  Red: 0  Saves: 0  Bonus: 2  Pts: 4
+NOTICE:  GW 2023-2024 (27)  |  Nottingham Forest vs Luton Town  |  Min: 82  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 2
+NOTICE:  GW 2023-2024 (28)  |  Fulham vs Nottingham Forest  |  Min: 60  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 1  Pts: 3
+NOTICE:  GW 2023-2024 (29)  |  Nottingham Forest vs Crystal Palace  |  Min: 70  G: 0  A: 0  CS: 1  Yel: 0  Red: 0  Saves: 0  Bonus: 1  Pts: 3
+NOTICE:  GW 2023-2024 (30)  |  Burnley vs Nottingham Forest  |  Min: 66  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 2
+NOTICE:  GW 2023-2024 (31)  |  Nottingham Forest vs Brentford  |  Min: 73  G: 0  A: 0  CS: 1  Yel: 1  Red: 0  Saves: 0  Bonus: 0  Pts: 1
+NOTICE:  GW 2023-2024 (32)  |  Leicester City vs Nottingham Forest  |  Min: 85  G: 0  A: 2  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 8
+NOTICE:  GW 2023-2024 (33)  |  Nottingham Forest vs West Ham United  |  Min: 0  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 0
+NOTICE:  GW 2023-2024 (34)  |  Sheffield United vs Nottingham Forest  |  Min: 0  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 0
+NOTICE:  GW 2023-2024 (35)  |  Newcastle United vs Nottingham Forest  |  Min: 0  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 0
+NOTICE:  GW 2023-2024 (36)  |  Nottingham Forest vs Manchester City  |  Min: 0  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 0
+NOTICE:  GW 2023-2024 (37)  |  Liverpool vs Nottingham Forest  |  Min: 0  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 0
+NOTICE:  GW 2023-2024 (38)  |  Nottingham Forest vs Everton  |  Min: 0  G: 0  A: 0  CS: 0  Yel: 0  Red: 0  Saves: 0  Bonus: 0  Pts: 0
+NOTICE:  ------------------------------------------------------------
+NOTICE:  Total gameweeks: 38   |   Season points total: 145
+NOTICE:
+NOTICE:  STEP 2 — Updating player prices
+NOTICE:  ------------------------------------------------------------
+NOTICE:  Starting price update for 600 players...
+  ... [216 price change lines] ...
+NOTICE:  --- Price update complete ---
+NOTICE:  Players checked: 600  |  Updated: 216  |  Raised: 212  |  Dropped: 4
+NOTICE:
+NOTICE:  ============================================================
+NOTICE:    Main Program 1 — complete
+NOTICE:  ============================================================
+DO
+
+
+----------------------------------------------------------------
+[9] MAIN PROGRAM 2 – main2.sql
+    (calls fn_evaluate_fantasy_team + pr_process_gameweek_points)
+----------------------------------------------------------------
+
+NOTICE:  ============================================================
+NOTICE:    Main Program 2
+NOTICE:  ============================================================
+NOTICE:
+NOTICE:  STEP 1 — Evaluating team 1 for gameweek 1
+NOTICE:  ------------------------------------------------------------
+NOTICE:    Team Name        : Roberto FC 1
+NOTICE:    Formation         : 4-1-4-1
+NOTICE:    Squad Value       : £124.4 m
+NOTICE:    Budget Remaining  : £53.1 m
+NOTICE:    Starting XI Pts   : 60
+NOTICE:    Avg Pts / Player  : 5.45
+NOTICE:    Captain           : Nicolas Martin (FWD)
+NOTICE:    Health Rating     : Good
+NOTICE:
+NOTICE:  STEP 2 — Processing points for gameweek 1
+NOTICE:  ------------------------------------------------------------
+NOTICE:  Processing points for gameweek 1...
+NOTICE:  Gameweek 1 processing complete.
+NOTICE:
+NOTICE:  Updated league standings after GW 1:
+NOTICE:    Rank 1  |  Kai FC 172  |  1894 pts
+NOTICE:    Rank 1  |  Emiliano FC 470  |  1585 pts
+NOTICE:    Rank 1  |  Henry FC 168  |  1146 pts
+NOTICE:    Rank 1  |  Bukayo FC 463  |  829 pts
+NOTICE:    Rank 1  |  Mohammed FC 233  |  1157 pts
+NOTICE:    Rank 1  |  Gabriel FC 298  |  2005 pts
+NOTICE:    Rank 1  |  Alejandro FC 440  |  506 pts
+NOTICE:    Rank 1  |  Andre FC 280  |  1772 pts
+NOTICE:    Rank 1  |  Harvey FC 310  |  1051 pts
+NOTICE:    Rank 1  |  Mohammed FC 325  |  259 pts
+NOTICE:
+NOTICE:  ============================================================
+NOTICE:    Main Program 2 — complete
+NOTICE:  ============================================================
+DO
+
+================================================================
+END OF OUTPUTS
+================================================================
