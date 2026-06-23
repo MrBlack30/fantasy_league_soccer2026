@@ -408,6 +408,12 @@ ROLLBACK;
 
 ```
 
+
+
+<img width="1822" height="1002" alt="image" src="https://github.com/user-attachments/assets/36635e40-00ad-428b-bf5b-b9bacce60a34" />
+<img width="1782" height="982" alt="image" src="https://github.com/user-attachments/assets/8d308b8b-b3a6-40d2-8b1b-b38ac1dddb8e" />
+<img width="1780" height="980" alt="image" src="https://github.com/user-attachments/assets/f3bfee99-9cc9-4e7d-9677-73dddca4c7c4" />
+
 ---
 
 ## חלק ו': אינדקסים וזמני ריצה
