@@ -25,7 +25,7 @@ ALTER TABLE FANTASY_TEAM
     ADD COLUMN IF NOT EXISTS total_transfers_cost NUMERIC(8,1) DEFAULT 0;
 ```
 
------------- Enter a screenshot of running AlterTable.sql and the two new columns appearing in the table structure (e.g. `\d player` and `\d fantasy_team` in psql) ------------
+<img width="1366" height="1394" alt="image" src="https://github.com/user-attachments/assets/db7a0ff5-cf8b-4ffc-8f8b-367963f7d6a3" />
 
 ---
 
