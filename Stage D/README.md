@@ -227,6 +227,7 @@ $$;
 
 The function is called from Main Program 2 and printed as a formatted report. The output below shows "Roberto FC 1" in a 4-1-4-1 formation, squad value £122.3m, captain Nicolas Martin (FWD), average 9.55 points per player, health rating **Excellent**.
 
+<img width="1700" height="186" alt="image" src="https://github.com/user-attachments/assets/d151b344-d390-4994-8551-7e1c5cd2f0d5" />
 
 ---
 
@@ -327,11 +328,8 @@ $$;
 
 When run against the 600-player database it processed all players and updated 216 prices (212 rises, 4 drops). Each UPDATE also silently fired Trigger 1, which saved the old price into `previous_price`.
 
------------- Enter a screenshot of the NOTICE output from Main Program 1 Step 2, showing individual price changes (e.g. "Player Harry Ederson-▲ (ID 423): £9.1m → £9.2m") ------------
+<img width="1396" height="860" alt="image" src="https://github.com/user-attachments/assets/7e43ed1a-049a-4383-a61f-d53cd802ff17" />
 
------------- Enter a screenshot of the final summary line: "Players checked: 600 | Updated: 216 | Raised: 212 | Dropped: 4" ------------
-
------------- Enter a screenshot of a SELECT on PLAYER showing the previous_price column populated (e.g. `SELECT player_id, first_name, last_name, previous_price, price FROM player WHERE previous_price IS NOT NULL LIMIT 5`) ------------
 
 ---
 
@@ -485,12 +483,8 @@ EXCEPTION
 END;
 $$;
 ```
+<img width="1112" height="1130" alt="image" src="https://github.com/user-attachments/assets/c8947902-6ce7-4abd-9d19-c344e87d5aed" />
 
------------- Enter a screenshot of the NOTICE output from Main Program 2 Step 2, showing "Processing points for gameweek 1..." and "Gameweek 1 processing complete." ------------
-
------------- Enter a screenshot of a SELECT on LEAGUE_STANDING showing the inserted rows (e.g. `SELECT * FROM league_standing WHERE gameweek_id = 1 LIMIT 10`) ------------
-
------------- Enter a screenshot of a SELECT on FANTASY_TEAM showing updated total_points (e.g. `SELECT team_id, team_name, total_points FROM fantasy_team ORDER BY total_points DESC LIMIT 5`) ------------
 
 ---
 
@@ -557,7 +551,7 @@ UPDATE PLAYER SET price = 10.0 WHERE player_id = 423;
 SELECT player_id, first_name, last_name, previous_price, price FROM PLAYER WHERE player_id = 423;
 ```
 
------------- Enter a screenshot of the above UPDATE statement output showing the NOTICE "Price RISE — Harry Ederson (ID 423): £9.2m → £10.0m (change: 0.8)" and the SELECT result showing previous_price = 9.2, price = 10.0 ------------
+<img width="1148" height="428" alt="image" src="https://github.com/user-attachments/assets/b2b285f4-0452-4ccf-9ec7-4c51dd6f598f" />
 
 **Test — invalid price (rejected):**
 
@@ -565,7 +559,7 @@ SELECT player_id, first_name, last_name, previous_price, price FROM PLAYER WHERE
 UPDATE PLAYER SET price = 25.0 WHERE player_id = 423;
 ```
 
------------- Enter a screenshot of the above UPDATE being rejected with the error "Invalid price 25.0 for player Harry Ederson (ID 423): must be between 0.1 and 20.0." ------------
+<img width="1046" height="122" alt="image" src="https://github.com/user-attachments/assets/7e1112e5-8f17-442b-a280-bb4f02d60cc3" />
 
 ---
 
@@ -661,7 +655,8 @@ VALUES (1001, 10.6, CURRENT_DATE, 1, 96, 1, 1);
 SELECT budget_remaining, total_transfers_cost FROM FANTASY_TEAM WHERE team_id = 1;
 ```
 
------------- Enter a screenshot showing the NOTICE "Transfer approved [team "Roberto FC 1"]: OUT Ben Thompson → IN Riyad Maddison for £10.6m (budget left: £60.6m)" and the SELECT result showing budget_remaining = 60.6 and total_transfers_cost = 10.6 ------------
+<img width="1360" height="398" alt="image" src="https://github.com/user-attachments/assets/831c0110-afda-476a-8d6e-f16da36db739" />
+
 
 **Test — rejected transfer (over budget):**
 
@@ -669,8 +664,7 @@ SELECT budget_remaining, total_transfers_cost FROM FANTASY_TEAM WHERE team_id = 
 INSERT INTO TRANSFER(transfer_id, price_paid, transfer_date, team_id, player_out_id, player_in_id, gameweek_id)
 VALUES (1002, 999.0, CURRENT_DATE, 1, 195, 2, 1);
 ```
-
------------- Enter a screenshot of the error "Transfer rejected: team "Roberto FC 1" has insufficient budget. Available: £60.6m | Required: £999.0m | Shortfall: £938.4m" ------------
+<img width="1496" height="96" alt="image" src="https://github.com/user-attachments/assets/108736b7-6a58-43f0-b939-55b05ee90b56" />
 
 ---
 
@@ -733,7 +727,8 @@ END;
 $$;
 ```
 
------------- Enter a screenshot of the full Main Program 1 output, showing the header, several GW stat rows, the totals line, and the price update summary at the end ------------
+<img width="1668" height="1450" alt="image" src="https://github.com/user-attachments/assets/701549b9-a295-4019-890d-930bf3c0e347" />
+<img width="854" height="454" alt="image" src="https://github.com/user-attachments/assets/54cff3fd-ca28-4427-b11c-ec6e10b5dbc6" />
 
 ---
 
@@ -802,7 +797,7 @@ END;
 $$;
 ```
 
------------- Enter a screenshot of the full Main Program 2 output, showing the team evaluation report, "Gameweek 1 processing complete.", and the league standings table at the end ------------
+<img width="852" height="1186" alt="image" src="https://github.com/user-attachments/assets/934878ba-f707-4279-a8f2-c3fab70a8c1f" />
 
 ---
 
