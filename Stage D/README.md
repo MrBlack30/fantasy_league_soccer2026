@@ -105,7 +105,8 @@ The function is called from Main Program 1, which fetches every row from the ret
 <img width="2716" height="1442" alt="image" src="https://github.com/user-attachments/assets/88f8c803-51dc-4b8c-8baf-edaa0c704dd4" />
 
 
------------- Enter a screenshot of the final summary line: "Total gameweeks: 38 | Season points total: ..." ------------
+<img width="790" height="154" alt="image" src="https://github.com/user-attachments/assets/0281025f-d2a5-478e-86a1-66c0fce2d55b" />
+
 
 ---
 
@@ -226,7 +227,6 @@ $$;
 
 The function is called from Main Program 2 and printed as a formatted report. The output below shows "Roberto FC 1" in a 4-1-4-1 formation, squad value £122.3m, captain Nicolas Martin (FWD), average 9.55 points per player, health rating **Excellent**.
 
------------- Enter a screenshot of the NOTICE output from Main Program 2 Step 1 showing the full team evaluation report (Team Name, Formation, Squad Value, Budget Remaining, Starting XI Pts, Avg Pts/Player, Captain, Health Rating) ------------
 
 ---
 
