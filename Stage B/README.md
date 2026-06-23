@@ -339,6 +339,7 @@ SET budget_remaining = -5.5
 WHERE team_id = 1;
 
 ```
+<img width="1414" height="830" alt="image" src="https://github.com/user-attachments/assets/f693e79e-6736-4820-a928-c91afe6b6e5c" />
 
 ---
 
@@ -428,8 +429,11 @@ ROLLBACK;
 CREATE INDEX idx_match_date ON MATCH(match_date);
 
 ```
+
 למה הוספנו אינדקסים**?**
 הוספנו אינדקס על העמודות user_id, birth_date ו-country כדי לשפר את ביצועי השאילתות. כאשר מסד הנתונים גדל ומכיל אלפי או מיליוני משתמשים, חיפוש ללא אינדקס אומר שהמסד צריך לסרוק כל שורה בטבלה — דבר שלוקח הרבה זמן. האינדקסים מאפשרים למסד הנתונים לקפוץ ישירות לתוצאה הרצויה, בדיוק כמו אינדקס בסוף ספר.
+<img width="1146" height="456" alt="image" src="https://github.com/user-attachments/assets/4c296c4f-b08d-4ac8-9eb5-1d638b72e57d" />
+
 
 למה הוספנו מגבלות?
 
